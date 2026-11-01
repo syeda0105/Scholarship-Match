@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} · ScholarshipMatch{% endblock %}
+{% block content %}
+<section class="error-layout">
+  <div class="eyebrow">LET'S GET YOU BACK ON TRACK</div>
+  <h1>{{ title }}</h1><p>{{ message }}</p>
+  <a class="primary-button" href="{{ url_for('main.home') }}">Back to the start <span aria-hidden="true">↗</span></a>
+</section>
+{% endblock %}

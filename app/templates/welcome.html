@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Welcome · ScholarshipMatch{% endblock %}
+{% block content %}
+<section class="welcome-layout container" aria-labelledby="welcome-title">
+  <div class="welcome-copy">
+    <div class="eyebrow"><span class="small-line" aria-hidden="true"></span> A NEW CHAPTER</div>
+    <div class="welcome-check" aria-hidden="true">✓</div>
+    <h1 id="welcome-title">You're in,<br><em>{{ g.user.full_name }}.</em></h1>
+    <p>Welcome to your ScholarshipMatch account.<br>It's good to have you here.</p>
+    <div class="welcome-note"><span class="live-dot" aria-hidden="true"></span> Successfully logged in</div>
+  </div>
+  <div class="account-card">
+    <div class="card-heading"><h2>Your account</h2><span class="card-mark" aria-hidden="true">↗</span></div>
+    <div class="avatar" aria-hidden="true">{{ g.user.full_name[:1]|upper }}</div>
+    <dl>
+      <div><dt>Full name</dt><dd>{{ g.user.full_name }}</dd></div>
+      <div><dt>Email address</dt><dd>{{ g.user.email }}</dd></div>
+      <div><dt>Joined</dt><dd>{{ g.user.created_at.strftime('%d %B %Y') }}</dd></div>
+    </dl>
+    <form action="{{ url_for('auth.logout') }}" method="post" data-loading>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="secondary-button" type="submit">Log out <span aria-hidden="true">↗</span></button>
+    </form>
+  </div>
+</section>
+{% endblock %}

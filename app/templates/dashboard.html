@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Overview · ScholarshipMatch{% endblock %}
+{% block content %}
+{% include 'auth/_messages.html' %}
+<div class="page-heading"><div><p class="section-label">Your workspace</p><h1>Hello, {{ g.user.full_name.split()[0] }}<span class="greeting-dot">.</span></h1><p>Good to have you here. Let's make the next step a little clearer.</p></div><span class="role-label">{{ 'Administrator' if g.user.role == 'admin' else 'Student account' }}</span></div>
+<section class="dashboard-banner"><div><p class="section-label">Small steps. Bigger possibilities.</p><h2>Your next chapter<br>starts with <em>you.</em></h2><p>Keep your details up to date, then explore opportunities that interest you.</p><a class="button mint-button" href="{{ url_for('scholarships.catalogue') }}">Explore scholarships <span aria-hidden="true">↗</span></a></div><div class="banner-art" aria-hidden="true"><div class="art-circle"></div><div class="banner-note"><span>Keep moving forward</span><strong>One step<br>at a time.</strong><span class="note-arrow">↗</span></div></div></section>
+<div class="overview-grid">
+  <section class="panel profile-summary"><div class="section-heading"><h2>Academic profile</h2><span class="status {{ 'status-green' if profile else 'status-amber' }}">{{ 'Saved' if profile else 'Not set up' }}</span></div>
+  {% if profile %}<div class="summary-metrics"><div><span>Target degree</span><strong>{{ degrees[profile.degree] }}</strong></div><div><span>Current CGPA</span><strong class="tabular">{{ '%.2f'|format(profile.cgpa) }} <small>/ 4.00</small></strong></div></div><p class="summary-field">{{ profile.field }} · {{ profile.nationality }}</p><a class="quiet-link" href="{{ url_for('profile.edit') }}">Edit your profile →</a>{% else %}<p>Add your academic background and study preferences. Your information is saved privately to your account.</p><a class="quiet-link" href="{{ url_for('profile.edit') }}">Set up your profile →</a>{% endif %}</section>
+  <section class="panel catalogue-summary"><div class="section-heading"><h2>Ready to explore?</h2><span class="small-arrow" aria-hidden="true">↗</span></div><strong class="catalogue-count tabular">{{ scholarship_count }}</strong><p>active catalogue {{ 'record' if scholarship_count == 1 else 'records' }}. Sample records are clearly labelled.</p><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">Browse the catalogue →</a></section>
+</div>
+<div class="section-heading list-heading"><div><h2>From the catalogue</h2><p>A starting point for your own research.</p></div><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">View all →</a></div>
+{% include 'cards.html' %}
+{% endblock %}

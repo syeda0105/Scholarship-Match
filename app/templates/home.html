@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Find your next chapter · ScholarshipMatch{% endblock %}
+{% block content %}
+<section class="landing-hero page-width">
+  <div><p class="section-label">Your ambition. Your next chapter.</p><h1>Opportunity starts<br>with <em>exploration.</em></h1><p class="hero-description">Explore scholarships, understand the published criteria, and keep your academic profile ready for what comes next.</p><div class="hero-actions"><a class="button" href="{{ url_for('auth.register') }}">Create your account <span aria-hidden="true">↗</span></a><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">Explore scholarships →</a></div><p class="hero-note">A place to start. A direction to grow.</p></div>
+  <div class="journey-board"><div class="board-heading"><span>Make room for possibility</span><span aria-hidden="true">✦</span></div><div class="board-step"><span class="step-number" aria-hidden="true">01</span><div><h2>A little about you</h2><p>Create an account and save your academic profile.</p></div></div><div class="board-step"><span class="step-number" aria-hidden="true">02</span><div><h2>A world to explore</h2><p>Browse opportunities by country, degree and funding.</p></div></div><div class="board-step"><span class="step-number" aria-hidden="true">03</span><div><h2>A clearer next step</h2><p>Read the criteria and verify the official source.</p></div></div><div class="board-bottom">Start small. Think beyond. <span aria-hidden="true">↗</span></div></div>
+</section>
+<section class="page-width landing-catalogue"><div class="section-heading"><div><p class="section-label">Explore what's listed</p><h2>A few places to begin.</h2></div><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">View catalogue →</a></div>{% include 'cards.html' %}</section>
+{% endblock %}

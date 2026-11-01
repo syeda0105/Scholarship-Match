@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if editing else 'Add' }} scholarship · ScholarshipMatch{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('admin.index') }}">← Back to management</a>
+<div class="page-heading"><div><p class="section-label">Catalogue management</p><h1>{{ 'Edit' if editing else 'Add' }} a scholarship.</h1><p>Record the published information accurately. Do not guess missing deadlines.</p></div></div>
+<form method="post" class="panel editor-form" data-loading>
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if errors %}<div class="notice notice-error" role="alert"><strong>Please check these fields:</strong><ul>{% for key, message in errors.items() %}<li><a href="#{{ key }}">{{ message }}</a></li>{% endfor %}</ul></div>{% endif %}
+<div class="form-grid">
+<div class="field"><label for="title">Scholarship title</label><input id="title" name="title" minlength="2" maxlength="140" value="{{ values.get('title', '') }}" required></div>
+<div class="field"><label for="provider">Provider</label><input id="provider" name="provider" minlength="2" maxlength="120" value="{{ values.get('provider', '') }}" required></div>
+<div class="field"><label for="country">Destination</label><select id="country" name="country" required><option value="">Select country</option>{% for country in countries %}<option value="{{ country }}" {{ 'selected' if values.get('country') == country }}>{{ country }}</option>{% endfor %}</select></div>
+<div class="field"><label for="degree">Degree</label><select id="degree" name="degree" required><option value="">Select degree</option>{% for key, label in degrees.items() %}<option value="{{ key }}" {{ 'selected' if values.get('degree') == key }}>{{ label }}</option>{% endfor %}</select></div>
+<div class="field"><label for="field">Eligible field</label><select id="field" name="field" required><option value="All fields">All fields</option>{% for field in fields %}<option value="{{ field }}" {{ 'selected' if values.get('field') == field }}>{{ field }}</option>{% endfor %}</select></div>
+<div class="field"><label for="funding">Funding type</label><select id="funding" name="funding" required><option value="">Select funding</option>{% for key, label in funding.items() %}<option value="{{ key }}" {{ 'selected' if values.get('funding') == key }}>{{ label }}</option>{% endfor %}</select></div>
+<div class="field"><label for="min_cgpa">Minimum CGPA (4.00 scale)</label><input id="min_cgpa" name="min_cgpa" type="number" min="0" max="4" step="0.01" value="{{ values.get('min_cgpa', '') }}" required></div>
+<div class="field"><label for="deadline">Deadline <span class="optional">(optional)</span></label><input id="deadline" name="deadline" type="date" value="{{ values.get('deadline') or '' }}"><p class="field-hint">Leave blank if the date has not been published.</p></div>
+</div>
+<div class="field"><label for="official_url">Official source URL</label><input id="official_url" name="official_url" type="url" maxlength="500" placeholder="https://..." value="{{ values.get('official_url', '') }}"><p class="field-hint">Required unless this is a fictional sample record.</p></div>
+<div class="field"><label for="description">Description</label><textarea id="description" name="description" rows="5" minlength="20" maxlength="3000" required>{{ values.get('description', '') }}</textarea><p class="field-hint">20–3,000 characters. Use plain text.</p></div>
+<div class="checkbox-stack"><label><input type="checkbox" name="is_active" {{ 'checked' if values.get('is_active') }}>Visible in the student catalogue</label><label><input id="is_sample" type="checkbox" name="is_sample" {{ 'checked' if values.get('is_sample') }}>This is a fictional demonstration record</label></div>
+<div class="form-actions"><a class="quiet-link" href="{{ url_for('admin.index') }}">Cancel</a><button class="button" type="submit">Save scholarship <span aria-hidden="true">↗</span></button></div>
+</form>
+{% endblock %}

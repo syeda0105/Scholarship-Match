@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Academic profile · ScholarshipMatch{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="section-label">A little about you</p><h1>Your academic profile.</h1><p>Keep your academic details and study preferences together.</p></div></div>
+<form method="post" class="panel editor-form" data-loading>
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if errors %}<div class="notice notice-error" role="alert"><strong>Please check these fields:</strong><ul>{% for key, message in errors.items() %}<li><a href="#{{ key }}">{{ message }}</a></li>{% endfor %}</ul></div>{% endif %}
+<div class="form-section-heading"><h2>Academic background</h2><p>All fields are required. CGPA uses the 4.00 scale in this phase.</p></div>
+<div class="form-grid">
+<div class="field"><label for="degree">Target degree</label><select id="degree" name="degree" required><option value="">Choose a degree</option>{% for key, label in degrees.items() %}<option value="{{ key }}" {{ 'selected' if values.get('degree') == key }}>{{ label }}</option>{% endfor %}</select></div>
+<div class="field"><label for="field">Field of study</label><select id="field" name="field" required><option value="">Choose a field</option>{% for field in fields %}<option value="{{ field }}" {{ 'selected' if values.get('field') == field }}>{{ field }}</option>{% endfor %}</select></div>
+<div class="field"><label for="cgpa">Current CGPA</label><input id="cgpa" name="cgpa" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="e.g. 3.25" value="{{ values.get('cgpa', '') }}" required><p class="field-hint">Between 0.00 and 4.00, up to two decimal places.</p></div>
+<div class="field"><label for="age">Age</label><input id="age" name="age" type="number" inputmode="numeric" min="16" max="100" step="1" placeholder="Your age in years" value="{{ values.get('age', '') }}" required><p class="field-hint">Whole years, from 16 to 100.</p></div>
+<div class="field"><label for="nationality">Nationality</label><input id="nationality" name="nationality" minlength="2" maxlength="80" placeholder="e.g. Pakistani" value="{{ values.get('nationality', '') }}" required></div>
+</div>
+<div class="form-section-heading separated"><h2>Study preferences</h2><p>These preferences are saved for your future scholarship search.</p></div>
+<div class="form-grid">
+<div class="field"><label for="preferred_country">Preferred destination</label><select id="preferred_country" name="preferred_country" required><option value="any">Open to any country</option>{% for country in countries %}<option value="{{ country }}" {{ 'selected' if values.get('preferred_country') == country }}>{{ country }}</option>{% endfor %}</select></div>
+<div class="field"><label for="preferred_funding">Funding preference</label><select id="preferred_funding" name="preferred_funding" required><option value="any">Open to any funding</option>{% for key, label in funding.items() %}<option value="{{ key }}" {{ 'selected' if values.get('preferred_funding') == key }}>{{ label }}</option>{% endfor %}</select></div>
+</div><div class="form-actions"><span>Your profile is private to your account.</span><button class="button" type="submit">Save profile <span aria-hidden="true">↗</span></button></div>
+</form>
+{% endblock %}

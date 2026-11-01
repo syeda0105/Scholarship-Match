@@ -1,0 +1,8 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="notice notice-{{ category }}" role="status">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+{% if errors and errors.get('form') %}
+  <div class="notice notice-error" role="alert">{{ errors['form'] }}</div>
+{% endif %}

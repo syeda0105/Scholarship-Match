@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.title }} · ScholarshipMatch{% endblock %}
+{% block content %}
+<div class="{{ 'page-width standalone-page' if not g.user }}">
+{% include 'auth/_messages.html' %}
+<a class="back-link" href="{{ url_for('scholarships.catalogue') }}">← Back to scholarships</a>
+<div class="detail-header"><div><span class="status {{ 'status-amber' if item.is_sample else 'status-neutral' }}">{{ 'Fictional sample · Not a real opportunity' if item.is_sample else 'Unverified listing · Check official source' }}</span><h1>{{ item.title }}</h1><p>{{ item.provider }} · {{ item.country }}</p></div>{% if g.user and g.user.role == 'admin' %}<a class="button small-button" href="{{ url_for('admin.edit', scholarship_id=item.id) }}">Edit scholarship ↗</a>{% endif %}</div>
+{% if not item.is_active %}<div class="notice notice-info">This scholarship is archived and hidden from students.</div>{% endif %}
+<div class="detail-grid"><section class="panel detail-copy"><h2>About this opportunity</h2><p class="preserve-lines">{{ item.description }}</p><h2>Recorded academic criteria</h2><dl class="criteria-list"><div><dt>Degree</dt><dd>{{ degrees[item.degree] }}</dd></div><div><dt>Field</dt><dd>{{ item.field }}</dd></div><div><dt>Minimum CGPA</dt><dd class="tabular">{{ '%.2f'|format(item.min_cgpa) }} / 4.00</dd></div></dl><p class="muted">These are published record fields, not an automated eligibility result. Read all provider requirements before applying.</p></section>
+<aside class="panel opportunity-facts"><h2>At a glance</h2><dl><div><dt>Destination</dt><dd>{{ item.country }}</dd></div><div><dt>Funding type</dt><dd>{{ funding[item.funding] }}</dd></div><div><dt>Deadline</dt><dd>{% if item.deadline %}{{ item.deadline.strftime('%d %B %Y') }}{% else %}Not listed{% endif %}</dd></div><div><dt>Status</dt><dd>{% if not item.deadline %}Deadline unknown{% elif item.deadline < today %}<span class="closed-text">Closed</span>{% else %}Recorded deadline is upcoming{% endif %}</dd></div></dl>
+{% if item.is_sample %}<div class="notice notice-info">Demo record only. No application is available.</div>{% elif item.official_url %}<a class="button" href="{{ item.official_url }}" target="_blank" rel="noopener noreferrer">Official website ↗</a><p class="field-hint">Opens the provider's website. Verify dates and eligibility there.</p>{% endif %}</aside></div>
+</div>
+{% endblock %}

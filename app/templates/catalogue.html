@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Scholarships · ScholarshipMatch{% endblock %}
+{% block content %}
+<div class="{{ 'page-width standalone-page' if not g.user }}">
+{% include 'auth/_messages.html' %}
+<div class="page-heading"><div><p class="section-label">A world of options</p><h1>Find your direction.</h1><p>Explore by destination, degree and funding. Take the time to read the details.</p></div>{% if g.user and g.user.role == 'admin' %}<a class="button small-button" href="{{ url_for('admin.create') }}">Add scholarship +</a>{% endif %}</div>
+<form class="filter-panel" action="{{ url_for('scholarships.catalogue') }}" method="get">
+<div class="search-field"><label for="q">Search scholarships</label><input id="q" name="q" maxlength="120" value="{{ filters.q }}" placeholder="Title, provider or field of study"></div>
+<div><label for="country">Destination</label><select id="country" name="country"><option value="">All countries</option>{% for country in countries %}<option value="{{ country }}" {{ 'selected' if filters.country == country }}>{{ country }}</option>{% endfor %}</select></div>
+<div><label for="degree">Degree</label><select id="degree" name="degree"><option value="">All degrees</option>{% for key, label in degrees.items() %}<option value="{{ key }}" {{ 'selected' if filters.degree == key }}>{{ label }}</option>{% endfor %}</select></div>
+<div><label for="funding">Funding</label><select id="funding" name="funding"><option value="">All funding</option>{% for key, label in funding.items() %}<option value="{{ key }}" {{ 'selected' if filters.funding == key }}>{{ label }}</option>{% endfor %}</select></div>
+<button class="button" type="submit">Search <span aria-hidden="true">→</span></button>
+</form>
+<div class="results-toolbar"><p><strong class="tabular">{{ items|length }}</strong> {{ 'opportunity' if items|length == 1 else 'opportunities' }} listed</p><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">Clear filters</a></div>
+{% include 'cards.html' %}
+<p class="catalogue-disclosure">Fictional samples are for demonstration only. Other records are unverified; check the official provider before applying. Filters are not a personal eligibility assessment.</p>
+</div>
+{% endblock %}

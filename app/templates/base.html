@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Discover scholarship opportunities with ScholarshipMatch.">
+  <title>{% block title %}ScholarshipMatch{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-grid.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+<body class="{{ 'signed-in' if g.user else 'public-site' }}">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="brand" href="{{ url_for('main.dashboard') if g.user else url_for('main.home') }}"><span class="brand-symbol" aria-hidden="true">s<span>m</span></span><span>Scholarship<span class="brand-light">Match</span></span></a>
+  <span class="header-note">Good things start with a little ambition.</span>
+  {% if g.user %}
+  <div class="header-account"><span class="account-initial" aria-hidden="true">{{ g.user.full_name[:1]|upper }}</span><span class="account-name">{{ g.user.full_name }}</span><form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-link" type="submit">Log out <span aria-hidden="true">↗</span></button></form></div>
+  {% else %}<nav class="public-nav" aria-label="Main navigation"><a href="{{ url_for('scholarships.catalogue') }}">Scholarships</a><a href="{{ url_for('auth.login') }}">Log in</a><a class="button small-button" href="{{ url_for('auth.register') }}">Get started <span aria-hidden="true">↗</span></a></nav>{% endif %}
+</header>
+<div class="workspace">
+  {% if g.user %}
+  <aside class="sidebar">
+    <nav aria-label="Workspace navigation" class="workspace-nav">
+      <a class="{{ 'current' if request.endpoint == 'main.dashboard' }}" href="{{ url_for('main.dashboard') }}" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %}><span aria-hidden="true">⌂</span>Overview</a>
+      <a class="{{ 'current' if request.endpoint == 'profile.edit' }}" href="{{ url_for('profile.edit') }}" {% if request.endpoint == 'profile.edit' %}aria-current="page"{% endif %}><span aria-hidden="true">◉</span>Academic profile</a>
+      <a class="{{ 'current' if request.blueprint == 'scholarships' }}" href="{{ url_for('scholarships.catalogue') }}" {% if request.endpoint == 'scholarships.catalogue' %}aria-current="page"{% endif %}><span aria-hidden="true">▤</span>Scholarships</a>
+      {% if g.user.role == 'admin' %}<a class="{{ 'current' if request.blueprint == 'admin' }}" href="{{ url_for('admin.index') }}" {% if request.endpoint == 'admin.index' %}aria-current="page"{% endif %}><span aria-hidden="true">⚑</span>Manage catalogue</a>{% endif %}
+    </nav>
+    <div class="sidebar-note"><span class="sidebar-spark" aria-hidden="true">✦</span><strong>A step closer.</strong><p>Your next chapter begins with knowing your options.</p><a href="{{ url_for('scholarships.catalogue') }}">Explore the catalogue <span aria-hidden="true">→</span></a></div>
+  </aside>
+  {% endif %}
+  <main id="main" class="{{ 'workspace-main' if g.user else 'public-main' }}">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<footer class="site-footer"><span>ScholarshipMatch <span class="footer-dot" aria-hidden="true">·</span> Know your next step.</span><span>Developed by Syeda Alysha Aly</span></footer>
+</body>
+</html>

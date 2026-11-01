@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Manage catalogue · ScholarshipMatch{% endblock %}
+{% block content %}
+{% include 'auth/_messages.html' %}
+<div class="page-heading"><div><p class="section-label">Administrator workspace</p><h1>Keep opportunities current.</h1><p>Add, edit or archive the records students can browse.</p></div><a class="button small-button" href="{{ url_for('admin.create') }}">Add scholarship +</a></div>
+<div class="panel management-panel"><div class="section-heading"><h2>Scholarship records</h2><span class="muted tabular">{{ items|length }} total</span></div>
+{% for item in items %}<article class="management-row"><div><h3><a href="{{ url_for('scholarships.detail', scholarship_id=item.id) }}">{{ item.title }}</a></h3><p>{{ item.country }} · {{ degrees[item.degree] }} · {{ 'Fictional sample' if item.is_sample else 'Unverified' }}</p></div><span class="status {{ 'status-green' if item.is_active else 'status-neutral' }}">{{ 'Active' if item.is_active else 'Archived' }}</span><div class="management-actions"><a class="quiet-link" href="{{ url_for('admin.edit', scholarship_id=item.id) }}">Edit</a><form action="{{ url_for('admin.toggle', scholarship_id=item.id) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-link" type="submit">{{ 'Archive' if item.is_active else 'Activate' }}</button></form></div></article>{% else %}<div class="empty-state"><h2>The catalogue is empty.</h2><p>Add your first scholarship or import the optional fictional demo records.</p></div>{% endfor %}</div>
+{% endblock %}

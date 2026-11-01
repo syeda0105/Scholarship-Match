@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Log in · ScholarshipMatch{% endblock %}
+{% block content %}
+<div class="auth-layout">
+  {% include 'auth/_story.html' %}
+  <section class="form-panel" aria-labelledby="form-title">
+    <div class="form-inner">
+      <div class="eyebrow"><span class="small-line" aria-hidden="true"></span> YOUR JOURNEY CONTINUES</div>
+      <h2 id="form-title">Good to see you.</h2>
+      <p class="form-intro">Log in to your ScholarshipMatch account.</p>
+      {% include 'auth/_messages.html' %}
+      <form method="post" action="{{ url_for('auth.login') }}" data-loading>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ next_url or '' }}">
+        <div class="field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="191" placeholder="you@example.com" value="{{ values.email }}" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" placeholder="Enter your password" required>
+            <button type="button" class="password-toggle" data-toggle-password="password" aria-controls="password" aria-pressed="false" aria-label="Show password">Show</button>
+          </div>
+        </div>
+        <button class="primary-button" type="submit"><span>Log in</span><span aria-hidden="true">↗</span></button>
+      </form>
+      <p class="switch-page">New here? <a href="{{ url_for('auth.register') }}">Create an account <span aria-hidden="true">→</span></a></p>
+      <div class="form-footnote"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Your password is stored as a hash.</span></div>
+    </div>
+  </section>
+</div>
+{% endblock %}
