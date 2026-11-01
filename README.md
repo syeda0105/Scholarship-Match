@@ -1,27 +1,47 @@
-# ScholarshipMatch — Authentication milestone
+# ScholarshipMatch
 
-A standalone Python Flask + HTML/Jinja + CSS + local Bootstrap grid + vanilla
-JavaScript + MySQL/PyMySQL project. **No npm, React, cloud account, AI API or paid service.**
+A scholarship discovery website developed for the Software Construction
+& Development course.
 
-Start with **[START_HERE.md](START_HERE.md)** for Windows setup.
+## Technology
 
-## What is implemented
+- Backend: Python and Flask
+- Frontend: HTML, Jinja templates, CSS, Bootstrap grid and vanilla JavaScript
+- Database: MySQL
+- Database connectivity: PyMySQL
 
-- Styled registration and login, password visibility toggles, responsive layout.
-- A real MySQL insert on registration, salted password hash (PBKDF2-SHA256).
-- Existing-account verification on login; no extra account row per login.
-- Protected welcome page with account details loaded from MySQL.
-- POST-only logout, session reset, CSRF, active-account checks, safe redirects.
-- Parameterized SQL, explicit commit/rollback, request connection cleanup.
-- Duplicate-email and form validation; clear database-unavailable errors.
-- Two-hour permanent session lifetime; HttpOnly/SameSite cookies.
-- Local `check-db` command, non-destructive schema, setup and test instructions.
+## Implemented Features
 
-This is **not the complete ScholarshipMatch website**. Scholarships, matching,
-profile editing and administration will be implemented later. There are no fake
-catalogues, admin accounts, or preview-only backends.
+- User registration, login and logout
+- Password hashing and input validation
+- Student dashboard
+- Academic profile creation and editing with MySQL persistence
+- Scholarship catalogue with search and filters
+- Individual scholarship details
+- Administrator-only scholarship creation, editing and visibility management
+- Responsive interfaces for desktop and mobile
 
-## Quick start (PowerShell, project root)
+## Database
+
+The database is named `scholarshipmatch_auth`.
+
+| Table | Purpose |
+|---|---|
+| users | User accounts, password hashes and roles |
+| profiles | Academic details and study preferences |
+| scholarships | Scholarship information and catalogue visibility |
+
+Registration creates a user record. Login verifies the existing account.
+Saving or editing an academic profile updates the authenticated user's data.
+
+## Local Setup — Windows
+
+Requirements: Python, VS Code, and a running MySQL service such as
+WampServer's MySQL.
+
+### First installation only
+
+Run these commands from the project root:
 
 ```powershell
 python -m venv .venv
@@ -29,34 +49,51 @@ python -m venv .venv
 .\.venv\Scripts\python.exe setup_env.py
 ```
 
-Then start WampServer's MySQL, import `database/001_users.sql` through phpMyAdmin
-as an administrator, create the limited application account, and set `.env`.
-See START_HERE.md for exact instructions; do **not** skip the database step.
+Using phpMyAdmin with a database administrator account, import:
+
+1. `database/001_users.sql`
+2. `database/002_upgrade.sql`
+3. `database/003_demo_data.sql` — optional fictional demonstration data
+
+Create an application MySQL account with SELECT, INSERT, UPDATE and DELETE
+permissions on `scholarshipmatch_auth.*`.
+
+Set the MYSQL_* values in your local `.env` to match your database credentials.
+Keep the generated SECRET_KEY private. Use COOKIE_SECURE=false for local HTTP.
+
+### Updating the earlier authentication version
+
+Back up the project and database first.
+
+Keep the existing `.env`, `.venv`, database and registered accounts.
+Import only `database/002_upgrade.sql`; optionally import the demonstration data.
+Do not repeat the initial installation steps.
+
+### Start the application
+
+Keep MySQL running, then execute:
 
 ```powershell
 .\.venv\Scripts\python.exe -m flask --app wsgi check-db
 .\.venv\Scripts\python.exe -m flask --app wsgi run
 ```
 
-Open http://127.0.0.1:5000. Ctrl+C stops the development server.
+Open http://127.0.0.1:5000.
 
-## Structure
+Public registration creates student accounts. Administrative actions require
+an account with the admin role.
 
-| File/folder | Purpose |
-|---|---|
-| `wsgi.py` | Entry point creating Flask |
-| `app/__init__.py` | Configuration, CSRF, blueprints, safe error responses |
-| `app/blueprints/auth.py` | Register/login/logout and current-user lookup |
-| `app/blueprints/main.py` | Entry redirect and protected welcome page |
-| `app/db.py` | MySQL connection, cleanup and check-db command |
-| `app/repository/users.py` | User SELECT/INSERT queries and transactions |
-| `app/security.py` | Input helpers, local redirects and development attempt limit |
-| `app/templates/` | Shared layout, forms, welcome/error pages |
-| `app/static/` | Offline CSS, Bootstrap grid, JS, favicon |
-| `database/001_users.sql` | Only the database and users table |
-| `setup_env.py`, `.env.example` | Safe local config creation/placeholders |
-| `tests/` | Behavior, security, SQL binding and opt-in live DB tests |
-| `docs/` | Scope, architecture, schema, routes, viva, verification |
+## Project Structure
+
+- `app/blueprints/` — Flask routes and access checks
+- `app/repository/` — Database queries
+- `app/templates/` — HTML/Jinja pages
+- `app/static/` — CSS, JavaScript and visual assets
+- `app/validation.py` — Shared input validation
+- `database/` — Schema, upgrade and optional demonstration SQL
+- `tests/` — Automated tests
+- `wsgi.py` — Application entry point
+- `setup_env.py` — Initial local configuration
 
 ## Tests
 
@@ -65,27 +102,25 @@ Open http://127.0.0.1:5000. Ctrl+C stops the development server.
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Without explicit test-database configuration the live integration test is skipped.
-Other tests use an isolated repository double; they do not prove MySQL works.
-Read `docs/TESTING.md` for recorded results and live test instructions.
+Live database tests require their separate test configuration.
+Never point database integration tests at the application's existing database.
 
-## Local-development limits
+## Security and Repository Rules
 
-- Confirm WampServer/Windows configuration on your laptop; this ZIP does not include Python or a MySQL server.
-- Installation of Python packages needs internet; runtime styles/assets are local.
-- The small in-process attempt limiter resets when Flask restarts and is not suitable for a multi-worker public deployment.
-- No email verification/reset, admin controls, or persistent server-side session revocation in this milestone.
-- Flask signed session cookies contain the user ID (not passwords), and are signed, not encrypted.
-- `COOKIE_SECURE=false` is for local HTTP only. Public hosting needs HTTPS, secure cookies, a production WSGI server, durable rate limits, and deployment review.
-- Password comparison is hashed; nonexistent-account responses are generic but timing equalization is not implemented.
+- Passwords are stored as hashes.
+- POST forms use CSRF protection.
+- Database queries use bound parameters.
+- Administrative routes enforce role checks.
+- Never commit `.env`, `.venv`, credentials or personal database exports.
+- `.env.example` contains configuration placeholders only.
 
-## GitHub
+## Current Scope
 
-Commit source, SQL, requirements, docs, tests and `.env.example`. Do not upload
-`.env`, `.venv`, caches, credentials or personal database dumps. The `.gitignore`
-is included. Suggested commit: `Implement Flask MySQL authentication milestone`.
+Eligibility calculation, recommendation ranking, comparison, application
+submission and deadline reminders are planned for later development.
 
-## Third-party code
+The optional demonstration scholarships are fictional and are labelled
+as samples. They are not verified scholarship opportunities.
 
-`bootstrap-grid.min.css` is the local Bootstrap 5.3.3 grid (MIT), distributed with
-`app/static/vendor/BOOTSTRAP-LICENSE.txt`. All other visual styles are in style.css.
+This application currently runs locally. Uploading its source to GitHub
+does not deploy the Flask server or MySQL database.
