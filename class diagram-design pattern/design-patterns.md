@@ -4,7 +4,7 @@
 **Registration:** F24-BSSE-110  
 **Course:** Software Construction & Development  
 **Date:** 20 October 2026  
-**Status:** Proposed design for implementation
+**Status:** Factory, Strategy, Facade and threaded evaluation implemented in the current Flask codebase; Singleton remains planned
 
 ## 1. Overview
 
@@ -26,6 +26,8 @@ The attached teaching documents demonstrate these concepts in Java. This project
 
 ## 3. Factory — Eligibility Evaluator Creation
 
+**Implementation status:** Implemented in `app/services/eligibility_strategies.py` as `EligibilityRuleFactory.create()`. It constructs the concrete degree, field or CGPA strategy. Unsupported rule identifiers raise `ValueError`; they are not silently ignored.
+
 **Problem:** Each stored eligibility criterion needs the appropriate evaluator. Repeated construction conditionals across controllers would duplicate knowledge of rule types.
 
 **Application:** EligibilityRuleFactory.create(definition) returns an evaluator implementing the EligibilityRule contract, such as AcademicResultRule, NationalityRule or QualificationRule. Other supported evaluator types can use the same contract. Unknown or unsupported mandatory conditions are handled as unresolved, never silently ignored.
@@ -36,7 +38,14 @@ The attached teaching documents demonstrate these concepts in Java. This project
 
 **Classification:** Creational. Precisely, this is a **Simple Factory**, matching the shape-factory approach in the supplied document; it is not the GoF Factory Method based on overriding creator subclasses.
 
+
+### Strategy — Independent eligibility checks
+
+**Implementation status:** Implemented in the same service module. `EligibilityStrategy` defines a common `evaluate(profile, scholarship)` interface. `DegreeStrategy`, `FieldStrategy` and `CGPAStrategy` each implement one rule. The facade applies the strategies independently and combines their results using weights of 25%, 25% and 50% respectively. The factory selects the concrete strategy by key. This is a behavioral pattern: the strategies are interchangeable implementations behind one interface.
+
 ## 4. Facade — Assessment and Recommendation Entry Point
+
+**Implementation status:** Implemented by `ScholarshipMatchFacade` in `app/services/recommendation_facade.py`. The authenticated `/recommendations` route calls this facade after loading the profile and active scholarship records through the repositories.
 
 **Problem:** Controllers should not manually coordinate data loading, mandatory rule checking, scoring and explanation assembly on every request.
 
@@ -49,6 +58,8 @@ The attached teaching documents demonstrate these concepts in Java. This project
 **Classification:** Structural.
 
 ## 5. Singleton — Shared Scoring Configuration
+
+**Implementation status:** Not implemented in this phase. Scoring weights are currently defined on the concrete strategies (25/25/50) to keep the first working eligibility flow explicit and testable. Do not claim Singleton as an implemented pattern during evaluation.
 
 **Problem:** Recommendation components within one running application process should use the same validated scoring-weight snapshot rather than accidentally using different copies or hard-coded values.
 
@@ -67,7 +78,8 @@ The attached teaching documents demonstrate these concepts in Java. This project
 | Pattern | Participants | Responsibility |
 | --- | --- | --- |
 | MVC | Models, Jinja templates, Flask controllers | Separate data/business responsibilities, presentation and request handling |
-| Simple Factory | EligibilityRuleFactory, EligibilityRule and concrete rule evaluators | Create the appropriate evaluator from a stored rule type |
+| Simple Factory | EligibilityRuleFactory and concrete strategy classes | Create the appropriate evaluator from a rule key |
+| Strategy | EligibilityStrategy, DegreeStrategy, FieldStrategy, CGPAStrategy | Evaluate each eligibility criterion through a common interface |
 | Facade | ScholarshipMatchFacade and assessment/scoring collaborators | Coordinate a complete result through a simple entry point |
 | Singleton | ScoringConfiguration | Provide one immutable scoring configuration instance per application process |
 
@@ -79,4 +91,4 @@ The attached teaching documents demonstrate these concepts in Java. This project
 - Verify repeated singleton access returns the same object in one process and weights cannot be mutated by a request.
 - Verify mandatory failures cannot be overridden by preferences and profile data never leaks through shared configuration.
 
-These checks are planned, not yet executed. See [class design](class-diagram.md), [use cases](use-cases.md) and [requirements](functional-and-non-functional-requirements.md) for context.
+The automated unit tests for Factory, Strategy, Facade, eligibility outcomes, expired scholarships and worker-thread execution are in `tests/test_recommendations.py`. Run `pytest -q` after installing `requirements-dev.txt`. The real MySQL integration test remains opt-in and requires a separate database ending in `_test`. See [class design](class-diagram.md), [use cases](use-cases.md) and [requirements](functional-and-non-functional-requirements.md) for context.

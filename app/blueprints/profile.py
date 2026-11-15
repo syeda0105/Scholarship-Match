@@ -18,12 +18,10 @@ def edit():
             'field': v.choice(request.form, 'field', v.FIELDS, errors, 'field'),
             'cgpa': v.number(request.form, 'cgpa', errors, 'CGPA', 0, 4),
             'age': v.number(request.form, 'age', errors, 'Age', 16, 100, integer=True),
-            'nationality': v.text(request.form, 'nationality', errors, 'Nationality', maximum=80),
+            'nationality': v.person_name(request.form, 'nationality', errors, 'Nationality', maximum=80),
             'preferred_country': v.choice(request.form, 'preferred_country', ('any',) + v.COUNTRIES, errors, 'preferred country'),
             'preferred_funding': v.choice(request.form, 'preferred_funding', ('any',) + tuple(v.FUNDING), errors, 'funding preference'),
         }
-        if data['nationality'] and not all(c.isalpha() or c in " -'" for c in data['nationality']):
-            errors['nationality'] = 'Use letters, spaces, apostrophes or hyphens for nationality.'
         if not errors:
             profiles.save(g.user['id'], data)  # Ignore any user_id supplied by the browser.
             flash('Your academic profile has been saved.', 'success')

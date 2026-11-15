@@ -1,6 +1,6 @@
 import re
 
-PASSWORD = 'A memorable passphrase!'
+PASSWORD = 'A memorable passphrase 1!'
 
 
 def token(client, path):

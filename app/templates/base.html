@@ -25,6 +25,7 @@
       <a class="{{ 'current' if request.endpoint == 'main.dashboard' }}" href="{{ url_for('main.dashboard') }}" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %}><span aria-hidden="true">⌂</span>Overview</a>
       <a class="{{ 'current' if request.endpoint == 'profile.edit' }}" href="{{ url_for('profile.edit') }}" {% if request.endpoint == 'profile.edit' %}aria-current="page"{% endif %}><span aria-hidden="true">◉</span>Academic profile</a>
       <a class="{{ 'current' if request.blueprint == 'scholarships' }}" href="{{ url_for('scholarships.catalogue') }}" {% if request.endpoint == 'scholarships.catalogue' %}aria-current="page"{% endif %}><span aria-hidden="true">▤</span>Scholarships</a>
+      <a class="{{ 'current' if request.endpoint == 'recommendations.index' }}" href="{{ url_for('recommendations.index') }}" {% if request.endpoint == 'recommendations.index' %}aria-current="page"{% endif %}><span aria-hidden="true">✦</span>My matches</a>
       {% if g.user.role == 'admin' %}<a class="{{ 'current' if request.blueprint == 'admin' }}" href="{{ url_for('admin.index') }}" {% if request.endpoint == 'admin.index' %}aria-current="page"{% endif %}><span aria-hidden="true">⚑</span>Manage catalogue</a>{% endif %}
     </nav>
     <div class="sidebar-note"><span class="sidebar-spark" aria-hidden="true">✦</span><strong>A step closer.</strong><p>Your next chapter begins with knowing your options.</p><a href="{{ url_for('scholarships.catalogue') }}">Explore the catalogue <span aria-hidden="true">→</span></a></div>

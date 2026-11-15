@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 *.log
 *.sql.gz
+# Ignore nested project backup
+ScholarshipMatch-Auth/
+
+# Ignore duplicate Python file
+app/__init__ (2).py

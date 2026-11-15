@@ -13,7 +13,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="field">
           <label for="full_name">Full name</label>
-          <input id="full_name" name="full_name" autocomplete="name" minlength="2" maxlength="120" placeholder="Your full name" value="{{ values.full_name }}" required {% if errors.get('full_name') %}aria-invalid="true" aria-describedby="name-error"{% endif %}>
+          <input id="full_name" name="full_name" autocomplete="name" minlength="2" maxlength="120" pattern="{{ name_pattern }}" title="Letters only. Spaces, apostrophes and hyphens are allowed between words." placeholder="Your full name" value="{{ values.full_name }}" required {% if errors.get('full_name') %}aria-invalid="true" aria-describedby="name-error"{% endif %}>
           {% if errors.get('full_name') %}<p id="name-error" class="field-error">{{ errors.full_name }}</p>{% endif %}
         </div>
         <div class="field">

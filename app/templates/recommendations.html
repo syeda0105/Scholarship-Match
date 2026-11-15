@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}My matches · ScholarshipMatch{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="section-label">Eligibility workspace</p><h1>My scholarship matches<span class="greeting-dot">.</span></h1><p>Compare your saved academic details with the requirements currently recorded in the catalogue.</p></div>
+</div>
+{% if not profile %}
+<section class="panel recommendation-empty"><span class="status status-amber">Profile needed</span><h2>Complete your academic profile first</h2><p>Your degree, field and CGPA are used to check the requirements available in the scholarship catalogue.</p><a class="button" href="{{ url_for('profile.edit') }}">Complete academic profile <span aria-hidden="true">↗</span></a></section>
+{% elif not results %}
+<section class="panel recommendation-empty"><h2>No active scholarships to assess yet</h2><p>When active scholarships are added to the catalogue, their requirements will appear here.</p><a class="quiet-link" href="{{ url_for('scholarships.catalogue') }}">Browse the catalogue →</a></section>
+{% else %}
+<div class="recommendation-note"><strong>How this result is calculated</strong><p>Each scholarship is checked against three recorded criteria: target degree (25%), field of study (25%) and minimum CGPA (50%). This is a preliminary comparison, not an official scholarship decision. Other eligibility conditions may apply.</p></div>
+<div class="recommendation-list">
+{% for result in results %}
+  <article class="panel recommendation-card">
+    <div class="recommendation-card-top"><div><p class="provider">{{ result.scholarship.provider }} · {{ result.scholarship.country }}</p><h2><a href="{{ url_for('scholarships.detail', scholarship_id=result.scholarship.id) }}">{{ result.scholarship.title }}</a></h2></div><span class="status {{ 'status-green' if result.eligible else ('status-amber' if result.is_closed else 'status-neutral') }}">{{ result.status }}</span></div>
+    <div class="match-score"><strong>{{ result.score }}<small>/100</small></strong><span>Criteria match score</span></div>
+    <div class="criteria-results">
+      {% for check in result.checks %}
+      <div class="criteria-result"><span class="criteria-icon {{ 'passed' if check.passed else 'failed' }}" aria-hidden="true">{{ '✓' if check.passed else '×' }}</span><div><strong>{{ check.label }}</strong><p>{{ check.detail }}</p></div><span class="criteria-state">{{ 'Met' if check.passed else 'Not met' }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="preference-note"><span>Preferences (not mandatory rules):</span><span>{{ 'Country matches' if result.preferences.country_matches else 'Different preferred country' }}</span><span>{{ 'Funding matches' if result.preferences.funding_matches else 'Different funding preference' }}</span></div>
+    <div class="card-bottom"><span>{% if result.scholarship.deadline %}Deadline: {{ result.scholarship.deadline.strftime('%d %b %Y') }}{% else %}Deadline not listed{% endif %}</span><a href="{{ url_for('scholarships.detail', scholarship_id=result.scholarship.id) }}">Review details <span aria-hidden="true">↗</span></a></div>
+  </article>
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -5,6 +5,7 @@ from flask import (Blueprint, current_app, flash, g, redirect, render_template,
                    request, session, url_for)
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app import validation as v
 from app.repository import users
 from app.security import valid_email, safe_next, password_error
 
@@ -49,15 +50,13 @@ def register():
     values = {'full_name': '', 'email': ''}
     errors = {}
     if request.method == 'POST':
-        values = {'full_name': request.form.get('full_name', '').strip(),
+        values = {'full_name': v.person_name(request.form, 'full_name', errors, 'Name'),
                   'email': request.form.get('email', '').strip().lower()}
         if not attempt_allowed():
             errors['form'] = 'Too many attempts. Please wait one minute and try again.'
             return form_response('auth/register.html', errors, values, 429)
         password = request.form.get('password', '')
         confirm = request.form.get('confirm_password', '')
-        if not 2 <= len(values['full_name']) <= 120:
-            errors['full_name'] = 'Enter a name between 2 and 120 characters.'
         if not valid_email(values['email']):
             errors['email'] = 'Enter a valid email address (up to 191 characters).'
         problem = password_error(password)

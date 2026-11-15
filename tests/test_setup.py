@@ -20,7 +20,7 @@ def test_missing_or_placeholder_secret_rejected(key):
 
 
 def test_pages_and_local_assets_load_without_mysql(client):
-    assert client.get('/').status_code == 302
+    assert client.get('/').status_code == 200
     for path in ['/auth/login', '/auth/register', '/static/css/style.css',
                  '/static/css/bootstrap-grid.min.css', '/static/js/main.js', '/static/favicon.svg']:
         assert client.get(path).status_code == 200

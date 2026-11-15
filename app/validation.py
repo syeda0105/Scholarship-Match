@@ -2,6 +2,11 @@
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from urllib.parse import urlsplit
+import re
+
+# Letters (any language) in words separated by one space, apostrophe or hyphen.
+NAME_PATTERN = re.compile(r"[^\W\d_]+(?:[ '’-][^\W\d_]+)*")
+NAME_HTML_PATTERN = r"\p{L}+(?:[ '’\-]\p{L}+)*"  # same rule for the browser form check
 
 DEGREES = {'undergraduate': "Bachelor's", 'masters': "Master's", 'phd': 'PhD'}
 FIELDS = ('Software Engineering', 'Computer Science', 'Engineering', 'Business',
@@ -15,6 +20,14 @@ def text(form, key, errors, label, minimum=2, maximum=120):
     value = form.get(key, '').strip()
     if not minimum <= len(value) <= maximum:
         errors[key] = f'{label} must contain {minimum}–{maximum} characters.'
+    return value
+
+
+def person_name(form, key, errors, label, maximum=120):
+    """Letters only (plus space, ' and -). Extra spaces are removed before checking."""
+    value = ' '.join(form.get(key, '').split())
+    if not 2 <= len(value) <= maximum or not NAME_PATTERN.fullmatch(value):
+        errors[key] = f'Enter a valid {label.lower()}: 2–{maximum} letters; spaces, apostrophes and hyphens allowed between words.'
     return value
 
 

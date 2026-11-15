@@ -18,17 +18,32 @@ def admin_required(view):
     return protected
 
 
+# ===== SEARCH CHANGE START =====
 @bp.get('')
 @admin_required
 def index():
-    return render_template('admin.html', items=scholarships.list_all(include_archived=True))
+    search = request.args.get('q', '').strip()[:120]
+
+    items = scholarships.list_all(
+        filters={'q': search},
+        include_archived=True
+    )
+
+    return render_template(
+        'admin.html',
+        items=items,
+        search=search
+    )
+# ===== SEARCH CHANGE END =====
 
 
 def edit_form(scholarship_id=None):
     item = scholarships.find(scholarship_id) if scholarship_id is not None else None
     if scholarship_id is not None and not item:
         abort(404)
+
     values, errors = item or {'is_active': 1, 'is_sample': 0}, {}
+
     if request.method == 'POST':
         values = request.form.to_dict()
         data = {
@@ -45,16 +60,23 @@ def edit_form(scholarship_id=None):
             'is_active': int(request.form.get('is_active') == 'on'),
             'is_sample': int(request.form.get('is_sample') == 'on'),
         }
+
         if data['official_url'] and not v.web_url(data['official_url']):
             errors['official_url'] = 'Enter a valid HTTP or HTTPS website address without embedded credentials.'
         elif not data['is_sample'] and not data['official_url']:
             errors['official_url'] = 'An official source link is required for a non-sample record.'
+
         if not errors:
             saved_id = scholarships.save(data, scholarship_id)
             flash('Scholarship saved.', 'success')
             return redirect(url_for('scholarships.detail', scholarship_id=saved_id))
-    return render_template('scholarship_form.html', values=values, errors=errors,
-                           editing=scholarship_id is not None), 400 if errors else 200
+
+    return render_template(
+        'scholarship_form.html',
+        values=values,
+        errors=errors,
+        editing=scholarship_id is not None
+    ), 400 if errors else 200
 
 
 @bp.route('/scholarships/new', methods=['GET', 'POST'])
@@ -74,6 +96,7 @@ def edit(scholarship_id):
 def toggle(scholarship_id):
     if not scholarships.find(scholarship_id):
         abort(404)
+
     scholarships.toggle_active(scholarship_id)
     flash('Scholarship visibility updated.', 'success')
     return redirect(url_for('admin.index'))

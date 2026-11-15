@@ -48,14 +48,17 @@ def create_app(test_config=None):
     from .blueprints.profile import bp as profile_bp
     from .blueprints.scholarships import bp as scholarships_bp
     from .blueprints.admin import bp as admin_bp
+    from .blueprints.recommendations import bp as recommendations_bp
     app.register_blueprint(profile_bp)
     app.register_blueprint(scholarships_bp)
     app.register_blueprint(admin_bp)
-    from .validation import DEGREES, FIELDS, COUNTRIES, FUNDING
+    app.register_blueprint(recommendations_bp)
+    from .validation import DEGREES, FIELDS, COUNTRIES, FUNDING, NAME_HTML_PATTERN
 
     @app.context_processor
     def form_choices():
-        return dict(degrees=DEGREES, fields=FIELDS, countries=COUNTRIES, funding=FUNDING)
+        return dict(degrees=DEGREES, fields=FIELDS, countries=COUNTRIES, funding=FUNDING,
+                    name_pattern=NAME_HTML_PATTERN)
 
     @app.errorhandler(CSRFError)
     def bad_csrf(error):

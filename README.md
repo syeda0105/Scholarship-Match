@@ -20,6 +20,9 @@ A scholarship discovery website developed for the Software Construction
 - Individual scholarship details
 - Administrator-only scholarship creation, editing and visibility management
 - Responsive interfaces for desktop and mobile
+- Preliminary scholarship eligibility checks and match scoring
+- Strategy, Simple Factory and Facade design patterns in the eligibility service
+- Concurrent scholarship assessment using Python ThreadPoolExecutor
 
 ## Database
 
@@ -87,6 +90,7 @@ an account with the admin role.
 
 - `app/blueprints/` — Flask routes and access checks
 - `app/repository/` — Database queries
+- `app/services/` — Eligibility strategies, factory and recommendation facade
 - `app/templates/` — HTML/Jinja pages
 - `app/static/` — CSS, JavaScript and visual assets
 - `app/validation.py` — Shared input validation
@@ -116,8 +120,10 @@ Never point database integration tests at the application's existing database.
 
 ## Current Scope
 
-Eligibility calculation, recommendation ranking, comparison, application
-submission and deadline reminders are planned for later development.
+Advanced eligibility rules, scholarship comparison, application submission and
+deadline reminders remain planned for later development. Current matching checks
+only degree, field of study and minimum CGPA; it is a preliminary aid, not an
+official scholarship decision.
 
 The optional demonstration scholarships are fictional and are labelled
 as samples. They are not verified scholarship opportunities.
