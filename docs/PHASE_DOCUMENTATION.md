@@ -13,8 +13,11 @@
 | AUTH-07 | Account remains after app restart | Integration test + manual restart |
 | AUTH-08 | Responsive styled forms with local assets | Browser checks |
 | AUTH-09 | Secrets external; errors do not reveal DB details | Config/error tests |
+| UI-01 | Dashboard routes and administrator navigation are role-specific | Route tests |
+| UI-02 | Applicant dashboard prompts for an incomplete academic profile | Route tests |
 
-Only these requirements are implemented. Catalogue/eligibility/admin are future phases.
+The AUTH requirements describe the authentication phase. UI-01 and UI-02 trace the
+later dashboard and administrator-navigation behavior covered by this delivery.
 
 ## Architecture and design
 
@@ -50,12 +53,18 @@ Server-rendered HTML, not a separate JSON API:
 
 | Method | Path | Input | Result |
 |---|---|---|---|
-| GET | / | — | Redirect to login (then welcome if already signed in) |
+| GET | / | — | Public scholarship discovery homepage |
 | GET | /auth/register | — | Registration form |
 | POST | /auth/register | full_name, email, password, confirm_password, csrf_token | Insert + 302 login; 400 invalid; 409 duplicate; 429 limit; 503 DB failure |
 | GET | /auth/login | optional next | Login form |
 | POST | /auth/login | email, password, csrf_token, optional next | 302 welcome/local destination; 401 invalid; 429 limit; 503 DB failure |
-| GET | /welcome | signed session cookie | Current account page or 302 login |
+| GET | /welcome | signed session cookie | Redirect to dashboard or 302 login |
+| GET | /dashboard | signed session cookie | Applicant dashboard or redirect admin to `/admin` |
+| GET | /admin | admin session | Administrator overview; non-admin receives 403 |
+| GET | /admin/catalogue | admin session, optional `q` | Searchable scholarship management list |
+| GET, POST | /admin/scholarships/new | admin session; scholarship fields on POST | Create form/save; POST requires CSRF |
+| GET, POST | /admin/scholarships/<id>/edit | admin session; scholarship fields on POST | Edit form/save; POST requires CSRF |
+| POST | /admin/scholarships/<id>/toggle | admin session, csrf_token | Change visibility and redirect to catalogue |
 | POST | /auth/logout | csrf_token | Clear session + 302 login |
 | GET | /auth/logout | — | 405 |
 | GET | /static/... | — | Local CSS/JS/assets |
@@ -63,6 +72,7 @@ Server-rendered HTML, not a separate JSON API:
 CSRF failures return 400. Sessions expire after two hours. After login the session
 is cleared/re-established; private pages use `Cache-Control: no-store`. Active
 user identity is reloaded server-side. Account details are escaped by Jinja.
+Administrator access is checked on the server for every management route.
 
 ## Integration/MCP
 

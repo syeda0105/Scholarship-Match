@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Scholarships · ScholarshipMatch Administration{% endblock %}
+{% block content %}
+{% include 'auth/_messages.html' %}
+<div class="page-heading admin-page-heading"><div><p class="section-label">CATALOGUE MANAGEMENT</p><h1>Scholarship records.</h1><p>Search, review, update or archive opportunities available to students.</p></div><a class="button" href="{{ url_for('admin.create') }}">＋ Add scholarship</a></div>
+<form class="admin-search" method="get" action="{{ url_for('admin.catalogue') }}"><label class="visually-hidden" for="admin-search">Search scholarship records</label><input id="admin-search" type="search" name="q" value="{{ search }}" placeholder="Search title, provider or field…" maxlength="120"><button class="button" type="submit">Search</button>{% if search %}<a class="quiet-link" href="{{ url_for('admin.catalogue') }}">Clear</a>{% endif %}</form>
+<section class="panel management-panel"><div class="section-heading"><div><p class="section-label">RECORDS</p><h2>All scholarships</h2></div><span class="muted tabular">{{ items|length }} shown</span></div>
+{% for item in items %}<article class="management-row"><div><h3><a href="{{ url_for('scholarships.detail', scholarship_id=item.id) }}">{{ item.title }}</a></h3><p>{{ item.provider }} · {{ item.country }} · {{ degrees[item.degree] }} · {{ 'Sample record' if item.is_sample else 'Manually added' }}</p></div><span class="status {{ 'status-green' if item.is_active else 'status-neutral' }}">{{ 'Published' if item.is_active else 'Archived' }}</span><div class="management-actions"><a class="quiet-link" href="{{ url_for('admin.edit', scholarship_id=item.id) }}">Edit</a><form action="{{ url_for('admin.toggle', scholarship_id=item.id) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-link" type="submit">{{ 'Archive' if item.is_active else 'Publish' }}</button></form></div></article>
+{% else %}<div class="empty-state"><h2>No records found.</h2><p>{% if search %}Try another search term.{% else %}Add the first scholarship to your catalogue.{% endif %}</p></div>{% endfor %}</section>
+{% endblock %}

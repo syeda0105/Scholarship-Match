@@ -1,106 +1,15 @@
 {% extends 'base.html' %}
-
-{% block title %}Manage catalogue · ScholarshipMatch{% endblock %}
-
+{% block title %}Admin overview · ScholarshipMatch{% endblock %}
 {% block content %}
 {% include 'auth/_messages.html' %}
-
-<div class="page-heading">
-    <div>
-        <p class="section-label">Administrator workspace</p>
-        <h1>Keep opportunities current.</h1>
-        <p>Add, edit or archive the records students can browse.</p>
-    </div>
-
-    <a class="button small-button"
-       href="{{ url_for('admin.create') }}">
-        Add scholarship +
-    </a>
-</div>
-
-<!-- ===== NEW SEARCH BAR START ===== -->
-<form method="get"
-      action="{{ url_for('admin.index') }}"
-      style="display:flex; gap:12px; flex-wrap:wrap; margin:24px 0;">
-
-    <input
-        type="search"
-        name="q"
-        value="{{ search | default('') }}"
-        placeholder="Search scholarships..."
-        aria-label="Search scholarships"
-        maxlength="120"
-        style="flex:1; min-width:200px; padding:14px 16px;
-               border:1px solid #ccd8d4; border-radius:10px;
-               font:inherit;"
-    >
-
-    <button class="button" type="submit">
-        Search
-    </button>
-
-    <a class="quiet-link"
-       href="{{ url_for('admin.index') }}"
-       style="align-self:center;">
-        Clear
-    </a>
-</form>
-<!-- ===== NEW SEARCH BAR END ===== -->
-
-<div class="panel management-panel">
-    <div class="section-heading">
-        <h2>Scholarship records</h2>
-        <span class="muted tabular">{{ items|length }} total</span>
-    </div>
-
-    {% for item in items %}
-    <article class="management-row">
-        <div>
-            <h3>
-                <a href="{{ url_for('scholarships.detail', scholarship_id=item.id) }}">
-                    {{ item.title }}
-                </a>
-            </h3>
-            <p>
-                {{ item.country }} · {{ degrees[item.degree] }} ·
-                {{ 'Fictional sample' if item.is_sample else 'Unverified' }}
-            </p>
-        </div>
-
-        <span class="status {{ 'status-green' if item.is_active else 'status-neutral' }}">
-            {{ 'Active' if item.is_active else 'Archived' }}
-        </span>
-
-        <div class="management-actions">
-            <a class="quiet-link"
-               href="{{ url_for('admin.edit', scholarship_id=item.id) }}">
-                Edit
-            </a>
-
-            <form action="{{ url_for('admin.toggle', scholarship_id=item.id) }}"
-                  method="post">
-                <input type="hidden"
-                       name="csrf_token"
-                       value="{{ csrf_token() }}">
-
-                <button class="text-link" type="submit">
-                    {{ 'Archive' if item.is_active else 'Activate' }}
-                </button>
-            </form>
-        </div>
-    </article>
-
-    {% else %}
-    <div class="empty-state">
-        {% if search | default('') %}
-            <h2>No scholarships found.</h2>
-            <p>Try another search or click Clear to see all records.</p>
-        {% else %}
-            <h2>The catalogue is empty.</h2>
-            <p>Add your first scholarship or import the optional fictional demo records.</p>
-        {% endif %}
-    </div>
-    {% endfor %}
-</div>
-
+<div class="page-heading admin-page-heading"><div><p class="section-label">SCHOLARSHIPMATCH / ADMINISTRATION</p><h1>Platform overview.</h1><p>Monitor your scholarship catalogue and keep opportunities current for students.</p></div><a class="button" href="{{ url_for('admin.create') }}">＋ Add scholarship</a></div>
+<section class="admin-metrics" aria-label="Catalogue summary">
+  <article class="admin-metric"><span class="metric-icon">▤</span><p>Total records</p><strong>{{ total_count }}</strong><small>Scholarships in catalogue</small></article>
+  <article class="admin-metric"><span class="metric-icon metric-green">✓</span><p>Published</p><strong>{{ active_count }}</strong><small>Visible to applicants</small></article>
+  <article class="admin-metric"><span class="metric-icon metric-gold">◷</span><p>Archived</p><strong>{{ archived_count }}</strong><small>Not shown in open catalogue</small></article>
+  <article class="admin-metric"><span class="metric-icon metric-blue">◇</span><p>Sample records</p><strong>{{ sample_count }}</strong><small>Clearly labelled examples</small></article>
+</section>
+<div class="admin-overview-grid"><section class="panel admin-activity"><div class="section-heading"><div><p class="section-label">CATALOGUE ACTIVITY</p><h2>Recently updated records</h2></div><a class="quiet-link" href="{{ url_for('admin.catalogue') }}">Manage all →</a></div>
+{% for item in items %}<article class="admin-activity-row"><span class="activity-mark">{{ 'S' if item.is_sample else '↗' }}</span><div><strong>{{ item.title }}</strong><p>{{ item.provider }} · {{ item.country }}</p></div><span class="status {{ 'status-green' if item.is_active else 'status-neutral' }}">{{ 'Published' if item.is_active else 'Archived' }}</span><a class="quiet-link" href="{{ url_for('admin.edit', scholarship_id=item.id) }}">Edit</a></article>{% else %}<div class="empty-state"><h2>Your catalogue starts here.</h2><p>Add a scholarship with its official source so students can review it.</p></div>{% endfor %}</section>
+<aside class="admin-quick-panel"><p class="section-label">QUICK ACTIONS</p><h2>Keep the catalogue useful.</h2><a href="{{ url_for('admin.create') }}"><span>＋</span><div><strong>Add scholarship</strong><small>Create a new opportunity record</small></div><b>→</b></a><a href="{{ url_for('admin.catalogue') }}"><span>▤</span><div><strong>Manage catalogue</strong><small>Search, edit and archive records</small></div><b>→</b></a><a href="{{ url_for('scholarships.catalogue') }}"><span>↗</span><div><strong>View public catalogue</strong><small>See what applicants can browse</small></div><b>→</b></a><div class="admin-note"><strong>Source quality matters.</strong><p>Use official provider links and verify eligibility details before publishing a scholarship.</p></div></aside></div>
 {% endblock %}

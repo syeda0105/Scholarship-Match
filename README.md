@@ -130,3 +130,7 @@ as samples. They are not verified scholarship opportunities.
 
 This application currently runs locally. Uploading its source to GitHub
 does not deploy the Flask server or MySQL database.
+
+## Latest interface milestone
+
+The current delivery adds an editorial/premium navy-and-gold interface, role-specific student and administrator navigation, a separate admin overview/catalogue workflow, a student profile-completion prompt and responsive interaction styling. See [docs/50_PERCENT_MILESTONE.md](docs/50_PERCENT_MILESTONE.md) for the exact delivery scope, FR/NFR status counts and validation limitations. External scholarship imports (including DAAD) remain deferred pending source research.

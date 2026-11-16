@@ -1,5 +1,11 @@
 # Verification report — 1 November 2026
 
+## Current local milestone check — 16 November 2026
+
+On the Windows project virtual environment, `.\.venv\Scripts\python.exe -m pytest -q`
+completed with **71 passed, 1 skipped**. The skipped test is the opt-in MySQL
+integration test; this run does not verify connectivity to the user's MySQL server.
+
 ## Automated behavior checks
 
 Executed in an isolated Linux environment with Python 3.12, Flask 3.1.3,

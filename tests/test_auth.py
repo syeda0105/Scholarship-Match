@@ -46,7 +46,7 @@ def test_successful_login_does_not_create_another_row(client, accounts):
     welcome = client.get('/dashboard')
     assert welcome.status_code == 200
     assert b'Sample Student' in welcome.data
-    assert b'Hello, Sample' in welcome.data
+    assert b'Welcome back, Sample' in welcome.data
     assert b'pbkdf2' not in welcome.data
     assert len(accounts) == 1
 
@@ -136,3 +136,33 @@ def test_valid_names_accepted(client, accounts, name):
 def test_name_whitespace_is_normalized(client, accounts):
     register(client, full_name='  Alysha    Khan  ')
     assert accounts[1]['full_name'] == 'Alysha Khan'
+
+
+def test_student_dashboard_shows_profile_completion_prompt(client):
+    register(client)
+    login(client)
+    response = client.get('/dashboard')
+    assert response.status_code == 200
+    assert b'Your scholarship journey starts with your profile.' in response.data
+    assert b'role="progressbar"' in response.data
+
+
+def test_admin_gets_separate_overview_without_student_navigation(client, accounts):
+    register(client, email='admin@example.com')
+    accounts[1]['role'] = 'admin'
+    login(client, email='admin@example.com')
+    response = client.get('/dashboard')
+    assert response.status_code == 302
+    assert response.location.endswith('/admin')
+    overview = client.get('/admin')
+    assert overview.status_code == 200
+    assert b'Platform overview' in overview.data
+    assert b'My matches' not in overview.data
+    assert b'My profile' not in overview.data
+    assert b'Manage catalogue' in overview.data
+
+
+def test_admin_catalogue_is_role_protected(client, accounts):
+    register(client)
+    login(client)
+    assert client.get('/admin/catalogue').status_code == 403

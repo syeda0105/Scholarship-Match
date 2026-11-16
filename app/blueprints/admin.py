@@ -18,23 +18,24 @@ def admin_required(view):
     return protected
 
 
-# ===== SEARCH CHANGE START =====
 @bp.get('')
 @admin_required
 def index():
+    items = scholarships.list_all(include_archived=True)
+    active = [item for item in items if item['is_active']]
+    archived = [item for item in items if not item['is_active']]
+    samples = [item for item in items if item['is_sample']]
+    return render_template('admin.html', items=items[:6], total_count=len(items),
+                           active_count=len(active), archived_count=len(archived),
+                           sample_count=len(samples))
+
+
+@bp.get('/catalogue')
+@admin_required
+def catalogue():
     search = request.args.get('q', '').strip()[:120]
-
-    items = scholarships.list_all(
-        filters={'q': search},
-        include_archived=True
-    )
-
-    return render_template(
-        'admin.html',
-        items=items,
-        search=search
-    )
-# ===== SEARCH CHANGE END =====
+    items = scholarships.list_all(filters={'q': search}, include_archived=True)
+    return render_template('admin_catalogue.html', items=items, search=search)
 
 
 def edit_form(scholarship_id=None):
@@ -99,4 +100,4 @@ def toggle(scholarship_id):
 
     scholarships.toggle_active(scholarship_id)
     flash('Scholarship visibility updated.', 'success')
-    return redirect(url_for('admin.index'))
+    return redirect(url_for('admin.catalogue'))
